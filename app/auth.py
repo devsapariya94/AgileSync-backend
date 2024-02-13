@@ -1,7 +1,7 @@
 from flask import Blueprint
 from . import models
 from . import views
-from pyjwt import jwt
+import jwt
 
 
 
