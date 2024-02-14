@@ -1,4 +1,9 @@
 from flask import Flask, Blueprint
+import os
+import dotenv
+
+# Load the environment variables
+dotenv.load_dotenv()
 
 app = Flask(__name__)
 
