@@ -5,3 +5,4 @@ class Config:
 
 MONGO_URI = 'mongodb://localhost:27017/'
 DB_NAME = 'test'
+USER_COLLECTION = 'users'
