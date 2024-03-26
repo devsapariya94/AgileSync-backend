@@ -1,11 +1,15 @@
 from flask import Flask, Blueprint
 import os
 import dotenv
-
+import flask_cors
 # Load the environment variables
 dotenv.load_dotenv()
 
 app = Flask(__name__)
+
+# Enabling CORS
+flask_cors.CORS(app)
+
 
 # Importing the blueprint
 from app.auth import auth
