@@ -1,11 +1,14 @@
 from pymongo import MongoClient
-
+import math
 from . import config    
 
 client = MongoClient(config.MONGO_URI)
 db = client[config.DB_NAME]
 users_collection = db[config.USER_COLLECTION]
 blacklistToken_collection = db[config.BLACKLIST_TOKEN_COLLECTION]
+project_collection = db[config.PROJECT_COLLECTION]
+task_collection = db[config.TASK_COLLECTION]
+
 
 class User:
     def __init__(self, name, password, email):

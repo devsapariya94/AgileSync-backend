@@ -51,7 +51,7 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
     
 
-@auth.route('/login')
+@auth.route('/login', methods= ['POST'])
 def login():
         request_data = request.get_json()   
         email = request_data['email']
