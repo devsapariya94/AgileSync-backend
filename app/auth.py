@@ -1,6 +1,4 @@
 from flask import Blueprint, request, jsonify
-from . import models
-from . import views
 import jwt
 from functools import wraps
 import datetime
@@ -9,7 +7,7 @@ import hashlib
 
 auth = Blueprint('auth', __name__)
 
-from . import views  
+
 from . import models    
 from . import config
 
