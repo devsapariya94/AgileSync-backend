@@ -16,3 +16,8 @@ def page_not_found(e):
 def index():
     return 'Index'
     
+@auth.token_required
+@views.route('/protected')
+def protected(current_user):
+    return current_user
+    
