@@ -40,6 +40,10 @@ class User:
         a = {'email': email}
         b = {'$set': {'skills': skills}}
         users_collection.update_one(a,b)
+
+    def get_profile_picture(email):
+        user = users_collection.find_one({'email': email})
+        return user['profile_picture']
         
 class BlacklistToken:
    

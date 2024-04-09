@@ -59,3 +59,9 @@ def add_profile_picture(current_user):
         models.User.update_profile_picture(current_user, public_url)
         return jsonify({'message': f'{public_url}', 'status': 'success'}), 200
     
+
+@routes.route('/getprofile-picture', methods=['GET'])
+@auth.token_required
+def get_profile_picture(current_user):
+    profile_picture = models.User.get_profile_picture(current_user)
+    return jsonify({'profile_picture': profile_picture}), 200
