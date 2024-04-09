@@ -49,7 +49,7 @@ def protected(current_user):
 
 
 
-@routes.route('/addprofile-picture', methods=['POST'])
+@routes.route('/update-profile-picture', methods=['POST'])
 @auth.token_required
 def add_profile_picture(current_user):
         data = request.files['image']
@@ -60,8 +60,34 @@ def add_profile_picture(current_user):
         return jsonify({'message': f'{public_url}', 'status': 'success'}), 200
     
 
-@routes.route('/getprofile-picture', methods=['GET'])
-@auth.token_required
-def get_profile_picture(current_user):
-    profile_picture = models.User.get_profile_picture(current_user)
+@routes.route('/get-profile-picture', methods=['GET'])
+def get_profile_picture():
+    email = request.get_json()['email']
+    profile_picture = models.User.get_profile_picture(email)
     return jsonify({'profile_picture': profile_picture}), 200
+
+
+@routes.route('/update-skills', methods=['POST'])
+@auth.token_required
+def add_skills(current_user):
+    skills = request.json['skills']
+    models.User.update_skills(current_user, skills)
+    return jsonify({'message': 'skills added', 'status': 'success'}), 200
+
+@routes.route('/get-skills', methods=['GET'])
+def get_skills():
+    email = request.get_json()['email']
+    skills = models.User.get_skills(email)
+    return jsonify({'skills': skills}), 200
+
+@routes.route('/all-userdata', methods=['GET'])
+@auth.token_required
+def all_user_data(current_user):
+    user = models.User.get_user(current_user)
+    data = {
+        'name': user['name'],
+        'email': user['email'],
+        'profile_picture': user['profile_picture'],
+        'skills': user['skills']
+    }
+    return jsonify(data), 200

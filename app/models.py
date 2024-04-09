@@ -44,6 +44,11 @@ class User:
     def get_profile_picture(email):
         user = users_collection.find_one({'email': email})
         return user['profile_picture']
+    
+    def get_skills(email):
+        user = users_collection.find_one({'email': email})
+        return user['skills']
+    
         
 class BlacklistToken:
    
