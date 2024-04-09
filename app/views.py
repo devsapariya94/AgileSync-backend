@@ -20,5 +20,6 @@ def index():
 @views.route('/protected')
 @auth.token_required
 def protected(current_user):
-    return current_user
-    
+    respoce_data=  {"email": current_user}
+
+    return respoce_data, 200
