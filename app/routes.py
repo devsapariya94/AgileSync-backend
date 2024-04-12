@@ -11,16 +11,18 @@ from . import models
 firebase_cred = credentials.Certificate(json.loads(os.getenv('FIREBASE_CREDENTIALS')))
 firebase = initialize_app(firebase_cred, {'storageBucket': os.environ['FIREBASE_STORAGE_BUCKET_URL']})
 
-def uploadToFirebase(data, use, filename):
+def uploadToFirebase(data, use, filename, project_id=None):
     try:              
         data = data.read()
                 
         bucket = storage.bucket(app=firebase)
-        blob = bucket.blob(f'{use}/{filename}')
+        
         if use == 'project-documents':
+            blob = bucket.blob(f'{use}/{project_id}/{filename}')
             blob.upload_from_string(data, content_type='application/pdf')
         
         elif use == 'profile-pictures':
+            blob = bucket.blob(f'{use}/{filename}')
             blob.upload_from_string(data, content_type='image/png')
 
         blob.make_public()
@@ -207,7 +209,7 @@ def add_project_document(current_user):
     
     filename = f"{project_id}.pdf"
 
-    public_url = uploadToFirebase(document, 'project-documents', filename)
+    public_url = uploadToFirebase(document, 'project-documents', filename, project_id)
     
     models.Project.update_project_documents(int(project_id), public_url)
     return jsonify({'message': 'Document added','url':public_url, 'status': 'success'}), 200
