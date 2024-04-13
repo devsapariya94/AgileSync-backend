@@ -2,6 +2,12 @@ from flask import Blueprint, request, jsonify
 from firebase_admin import credentials, storage, initialize_app
 import os
 import json
+import requests
+
+from appwrite.client import Client
+from appwrite.input_file import InputFile
+from appwrite.services.storage import Storage
+from appwrite.id import ID
 
 routes = Blueprint('routes', __name__)
 
@@ -11,22 +17,81 @@ from . import models
 firebase_cred = credentials.Certificate(json.loads(os.getenv('FIREBASE_CREDENTIALS')))
 firebase = initialize_app(firebase_cred, {'storageBucket': os.environ['FIREBASE_STORAGE_BUCKET_URL']})
 
+
+
+def uploadToAppwrite(data, use, filename, project_id=None):
+
+    client = Client()
+
+    (client
+    .set_endpoint(os.getenv("APPWRITE_ENDPOINT")) # Your API Endpoint
+    .set_project(os.getenv("APPWRITE_PROJECT_ID")) # Your project ID
+    .set_key(os.getenv("APPWRTIE_API_KEY")) # Your secret API key
+    )
+
+    if use == 'profile-pictures':
+        storage = Storage(client)
+
+        try:
+            # delete the file if it exists
+            storage.delete_file(os.getenv("APPWRITE_BUCKET_ID"), filename)
+        except:
+            pass
+
+        data = data.read()
+        id = filename
+        storage.create_file(os.getenv("APPWRITE_BUCKET_ID"), id , InputFile.from_bytes(data, filename=filename))
+        bucket = os.getenv("APPWRITE_BUCKET_ID")
+        appwrite_project_id = os.getenv("APPWRITE_PROJECT_ID")
+        file_url = f"https://cloud.appwrite.io/v1/storage/buckets/{bucket}/files/{id}/view?project={appwrite_project_id}"
+
+        return file_url
+
+    elif use == 'project-documents':
+        storage = Storage(client)
+        try:
+            # delete the file if it exists
+            storage.delete_file(os.getenv("APPWRITE_BUCKET_ID"), filename)
+        except:
+            pass
+
+        data = data.read()
+        id = filename
+        storage.create_file(os.getenv("APPWRITE_BUCKET_ID"), id , InputFile.from_bytes(data, filename=filename))
+        bucket = os.getenv("APPWRITE_BUCKET_ID")
+        appwrite_project_id = os.getenv("APPWRITE_PROJECT_ID")
+        file_url = f"https://cloud.appwrite.io/v1/storage/buckets/{bucket}/files/{id}/view?project={appwrite_project_id}"
+
+        return file_url
+
+
+
 def uploadToFirebase(data, use, filename, project_id=None):
     try:              
         data = data.read()
-                
-        bucket = storage.bucket(app=firebase)
         
+        bucket = storage.bucket(app=firebase)
         if use == 'project-documents':
+            
+
             blob = bucket.blob(f'{use}/{project_id}/{filename}')
+
             blob.upload_from_string(data, content_type='application/pdf')
         
         elif use == 'profile-pictures':
             blob = bucket.blob(f'{use}/{filename}')
             blob.upload_from_string(data, content_type='image/png')
 
+
+        # create token for the file
         blob.make_public()
-        return blob.public_url
+        
+        # refresh the public url in chache to get the updated url 
+        blob.reload()
+        public_url = blob.public_url
+        abc = blob.generate_signed_url(1712983991)
+        return abc
+    
     
     
     except Exception as e:
@@ -61,7 +126,7 @@ def protected(current_user):
 def add_profile_picture(current_user):
         data = request.files['image']
         filename = current_user.replace('@', '_').replace('.', '_').replace('com', '') + '.png'
-        public_url= uploadToFirebase(data, 'profile-pictures', filename)
+        public_url= uploadToAppwrite(data, 'profile-pictures', filename)
 
         models.User.update_profile_picture(current_user, public_url)
         return jsonify({'message': f'{public_url}', 'status': 'success'}), 200
@@ -207,9 +272,9 @@ def add_project_document(current_user):
     if project['owner'] != current_user and current_user not in project['team']:
         return jsonify({'message': 'You are not allowed to add document to this project', 'status': 'failed'}), 403
     
-    filename = f"{project_id}.pdf"
+    filename = f"{project_id}_pdf"
 
-    public_url = uploadToFirebase(document, 'project-documents', filename, project_id)
-    
+    public_url = uploadToAppwrite(document, 'project-documents', filename, project_id)
+    print(public_url)
     models.Project.update_project_documents(int(project_id), public_url)
     return jsonify({'message': 'Document added','url':public_url, 'status': 'success'}), 200
