@@ -278,3 +278,30 @@ def add_project_document(current_user):
     print(public_url)
     models.Project.update_project_documents(int(project_id), public_url)
     return jsonify({'message': 'Document added','url':public_url, 'status': 'success'}), 200
+
+@routes.route('/add-team-member', methods=['POST'])
+@auth.token_required
+def add_team_member(current_user):
+    project_id = request.json['project_id']
+    team_members = request.json['team_member']
+
+    # check if the user is the owner of the project
+    if not models.Project.check_if_user_is_owner(int(project_id), current_user):
+        return jsonify({'message': 'You are not allowed to add team members to this project', 'status': 'failed'}), 403
+    
+    for team_member in team_members:
+        models.Project.add_team_member(int(project_id), team_member)
+    return jsonify({'message': 'Team members added', 'status': 'success'}), 200
+
+@routes.route('/get-project-by-participant', methods=['GET'])
+@auth.token_required
+def get_project_by_participant(current_user):
+    team_member = current_user
+    project = models.Project.get_project_by_participant(team_member)
+    print(project)
+
+    # convert the project id to string
+    for p in project:
+        p["_id"] = str(p["_id"])
+        
+    return jsonify(project), 200

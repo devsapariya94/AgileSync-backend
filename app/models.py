@@ -125,10 +125,29 @@ class Project:
         project = project_collection.find({'mentor': mentor})
         return project
     
-    def get_project_by_team_member(team_member):
-        project = project_collection.find_one({'team': team_member})
-        return project
+    def get_project_by_participant(team_member):
+        projects = []
+
+        # find all the projects the user is in the list of team member
+        for project in project_collection.find({'team': team_member}):
+            projects.append(project)
+
+        for project in project_collection.find({'owner': team_member}):
+            projects.append(project)
+            
+        return projects
     
+    def check_if_user_is_owner(project_id, owner):
+        project = project_collection.find_one({'project_id': project_id})
+        if project['owner'] == owner:
+            return True
+        return False
+
+    def add_team_member(project_id, team_member):
+        a = {'project_id': project_id}
+        b = {'$push': {'team': team_member}}
+        project_collection.update_one(a,b)
+
     def add_task(project_id, task):
         a = {'project_id': project_id}
         b = {'$push': {'tasks': task}}
@@ -149,7 +168,7 @@ def get_unique_task_id():
         while task_collection.find_one({'task_id': task_id}):
             task_id = random.randint(100000, 999999)
         return task_id
-    
+
     
 class Task:
     def __init__ (self, title, duration,assignee, project_id,  status = None, priority = None, subtask = None, tags = None, description = None):
