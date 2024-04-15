@@ -71,7 +71,7 @@ def get_unique_project_id():
 
 
 class Project:
-    def __init__(self, title, description, purpose, owner, mentor, duration, team = [], objectives = None, documents = None, requirements= None, tasks = None):
+    def __init__(self, title, description, purpose, owner, mentor, duration, team = [], objectives = None, documents = None, requirements= [], tasks = []):
         self.project_id = get_unique_project_id()
         self.title = title
         self.description = description
@@ -134,7 +134,7 @@ class Project:
 
         for project in project_collection.find({'owner': team_member}):
             projects.append(project)
-            
+
         return projects
     
     def check_if_user_is_owner(project_id, owner):
@@ -197,8 +197,7 @@ class Task:
             'project_id': self.project_id
         })
 
-        Project.add_task(self.project_id, self.task_id)
-
+        return self.task_id
     def get_tasks_by_project(project_id):
         tasks = task_collection.find({'project_id': project_id})
         return tasks
@@ -228,6 +227,6 @@ class Task:
         task_collection.update_one(a,b)
 
     def get_task_by_assignee(assignee):
-        task = task_collection.find_one({'assignee': assignee})
+        task = task_collection.find({'assignee': assignee})
         return task
     

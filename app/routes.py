@@ -305,3 +305,100 @@ def get_project_by_participant(current_user):
         p["_id"] = str(p["_id"])
         
     return jsonify(project), 200
+
+
+@routes.route('/add-task', methods=['POST'])
+@auth.token_required
+def add_task(current_user):
+    project_id = request.json['project_id']
+    title = request.json['title']
+    duration = request.json['duration']
+    assignee = request.json['assignee']
+
+    description = None
+    status = None
+    priority = None
+    subtask = None
+    tags = None
+
+    if 'description' in request.json:
+        description = request.json['description']
+    if 'status' in request.json:
+        status = request.json['status']
+    if 'priority' in request.json:
+        priority = request.json['priority']
+    if 'subtask' in request.json:
+        subtask = request.json['subtask']
+    if 'tags' in request.json:
+        tags = request.json['tags']
+
+    task_id = models.Task(title, duration, assignee, int(project_id), description, status, priority, subtask, tags).save()
+
+    models.Project.add_task(int(project_id), task_id)
+
+    return jsonify({'message': 'Task added', 'task_id': task_id, 'status': 'success'}), 200
+
+@routes.route('/get-all-tasks-by-project', methods=['GET'])
+def get_tasks():
+    project_id = request.get_json()['project_id']
+    tasks = models.Project.get_tasks(int(project_id))
+    task_list = []
+    for task in tasks:
+        task_list.append(models.Task.get_task(task))
+    for task in task_list:
+        task["_id"] = str(task["_id"])
+
+    return jsonify(task_list), 200
+
+@routes.route('/get-task', methods=['GET'])
+def get_all_tasks_by_project():
+    task_id = request.get_json()['task_id']
+    task = models.Task.get_task(int(task_id))
+    task["_id"] = str(task["_id"])                    
+    return jsonify(task), 200
+
+@routes.route('/update-task-status', methods=['POST'])
+def update_task_status():
+    task_id = request.json['task_id']
+    status = request.json['status']
+
+    models.Task.update_task_status(task_id, status)
+    return jsonify({'message': 'Task status updated', 'status': 'success'}), 200
+
+@routes.route('/update-task-priority', methods=['POST'])
+def update_task_priority():
+    task_id = request.json['task_id']
+    priority = request.json['priority']
+
+    models.Task.update_task_priority(task_id, priority)
+    return jsonify({'message': 'Task priority updated', 'status': 'success'}), 200
+
+@routes.route('/update-task-subtask', methods=['POST'])
+def update_task_subtask():
+    task_id = request.json['task_id']
+    subtask = request.json['subtask']
+
+    models.Task.update_task_subtask(task_id, subtask)
+    return jsonify({'message': 'Task subtask updated', 'status': 'success'}), 200
+
+
+@routes.route('/update-task-tags', methods=['POST'])
+def update_task_tags():
+    task_id = request.json['task_id']
+    tags = request.json['tags']
+
+    models.Task.update_task_tags(task_id, tags)
+    return jsonify({'message': 'Task tags updated', 'status': 'success'}), 200
+
+
+@routes.route('/get-task-by-assignee', methods=['GET'])
+def get_task_by_assignee():
+    assignee = request.get_json()['assignee']
+    tasks = models.Task.get_task_by_assignee(assignee)
+
+    tasks = list(tasks)
+    for task in tasks:
+        task["_id"] = str(task["_id"])
+
+    return jsonify(tasks), 200
+
