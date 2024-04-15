@@ -9,8 +9,8 @@ users_collection = db[config.USER_COLLECTION]
 blacklistToken_collection = db[config.BLACKLIST_TOKEN_COLLECTION]
 project_collection = db[config.PROJECT_COLLECTION]
 task_collection = db[config.TASK_COLLECTION]
-
-
+faculty_collection = db[config.FACULTY_COLLECTION]
+announcement_collection = db[config.ANNOUNCEMENT_COLLECTION]
 class User:
     def __init__(self, name, password, email):
         self.name = name
@@ -230,3 +230,76 @@ class Task:
         task = task_collection.find({'assignee': assignee})
         return task
     
+
+class Faculty:
+    def __init__(self, name, email, department,password, profile_picture = None):
+        self.name = name
+        self.email = email
+        self.department = department
+        self.profile_picture = profile_picture
+        self.password = password
+
+    def save(self):
+        faculty_collection.insert_one({
+            'name': self.name,
+            'email': self.email,
+            'department': self.department,
+            'profile_picture': self.profile_picture,
+            'password': self.password
+        })
+
+    def get_faculty(email):
+        faculty = faculty_collection .find_one({'email': email})
+        return faculty
+
+    def update_profile_picture(email, profile_picture):
+        a = {'email': email}
+        b = {'$set': {'profile_picture': profile_picture}}
+        faculty_collection.update_one(a,b)
+    
+    def get_profile_picture(email):
+        faculty = faculty_collection.find_one({'email': email})
+        return faculty['profile_picture']
+    
+    def get_faculty_by_department(department):
+        faculty = faculty_collection.find({'department': department})
+        return faculty
+    
+
+def get_unique_announcement_id():
+    announcement_id = random.randint(10000, 9999999 )
+    while announcement_collection.find_one({'announcement_id': announcement_id}):
+        announcement_id = random.randint(100000, 999999)
+    return announcement_id
+
+class Announcement:
+    def __init__(self,announcement_id, title, description, owner, team_size, duration):
+        self.announcement_id = announcement_id
+        self.title = title
+        self.description = description
+        self.owner = owner
+        self.team_size = team_size
+        self.duration = duration
+
+
+
+    def save(self):
+        announcement_collection.insert_one({
+            'announcement_id': self.announcement_id,
+            'title': self.title,
+            'description': self.description,
+            'owner': self.owner,
+            'team_size': self.team_size,
+            'duration' : self.duration
+        })
+            
+        return self.announcement_id
+
+    def get_announcement(announcement_id):
+        announcement = announcement_collection.find_one({'announcement_id': announcement_id})
+        return announcement
+
+    def get_announcement_by_owner(owner):
+        announcement = announcement_collection.find({'owner': owner})
+        return announcement
+

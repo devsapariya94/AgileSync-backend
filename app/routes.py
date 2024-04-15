@@ -402,3 +402,32 @@ def get_task_by_assignee():
 
     return jsonify(tasks), 200
 
+
+@routes.route('/make-an-announcement', methods=['POST'])
+@auth.token_required
+def make_an_announcement(current_user):
+    if not models.Faculty.get_faculty(current_user):
+        return jsonify({'message': 'You are not allowed to make an announcement', 'status': 'failed'}), 403
+    
+    title = request.json['title']
+    description = request.json['description']
+    owner = current_user
+    team_size = request.json['team_size']
+    duration = request.json['duration']
+    announcement_id = models.get_unique_announcement_id()
+    models.Announcement(announcement_id,title, description, owner, team_size, duration).save()
+    return jsonify({'message': 'Announcement made', 'status': 'success', "url": f"https://agilesync.co/create-project/{announcement_id}"}), 200
+
+
+@routes.route('/get-announcement', methods=['GET'])
+def get_announcement():
+    announcement_id = request.get_json()['announcement_id']
+    
+    announcement = models.Announcement.get_announcement(int(announcement_id))
+    if not announcement:
+        return jsonify({'message': 'Announcement not found', 'status': 'failed'}), 404
+    mentor = announcement['owner']
+    team_size = announcement['team_size']
+    duration = announcement['duration']
+
+    return jsonify({'mentor': mentor, 'team_size': team_size, 'duration': duration}), 200

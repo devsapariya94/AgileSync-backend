@@ -55,23 +55,37 @@ def login():
         email = request_data['email']
         password = request_data['password']
         password = hash_password(password)
+
         user = models.User.get_user(email)
         if user:
             if user['password'] == password:
                 token = generate_token(user)
                 return jsonify({'token': token, 
-                                "status" : "success"}), 200
+                                "status" : "success", "role": "user"}), 200
             else:
                 return {
                     'message': 'Invalid email or password',
                     'status': 'error'
                 }, 406
+        
         else:
-            return {
-                'message': 'Invalid email or password',
-                'status': 'error'
-            }, 406
-
+            faculty = models.Faculty.get_faculty(email)
+            if faculty:
+                if faculty['password'] == password:
+                    token = generate_token(faculty)
+                    return jsonify({'token': token, 
+                                    "status" : "success", "role":"faculty"}), 200
+                else:
+                    return {
+                        'message': 'Invalid email or password',
+                        'status': 'error'
+                    }, 406
+            else:
+                return {
+                    'message': 'Invalid email or password',
+                    'status': 'error'
+                }, 406
+            
 
 
 @auth.route('/logout')
@@ -81,6 +95,44 @@ def logout(current_user):
     models.BlacklistToken.save(token)
     return jsonify({'message': 'Successfully logged out'}), 200
 
+@auth.route('/register-faculty', methods=['POST'])
+def register_faculty():
+    request_data = request.get_json()
+    name = request_data['name']
+    password = request_data['password']
+    password = hash_password(password)
+    email = request_data['email']
+    department = request_data['department']
+    try: 
+        if models.Faculty.get_faculty(email):
+            return_data = {
+                'message': 'Email already exists',
+                "status": "error"
+            }, 406
+            return return_data
+        else:
+            faculty = models.Faculty(name, email, department, password)
+
+            faculty.save()
+            temp_json = {
+                'name': name,
+                'email': email
+            }
+            token= generate_token(temp_json)
+            return_data = {
+                "token": token,
+                'message': 'Faculty created',
+                "status": "success"
+            }, 200
+            return return_data 
+
+    except Exception as e:
+        print(e)
+        return_data = {
+            'message': 'An error occurred',
+            "status": "error"
+        }, 406
+        return return_data
 
 @auth.route('/register', methods=['POST'])
 def register():
