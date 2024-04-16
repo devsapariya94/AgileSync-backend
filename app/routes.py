@@ -3,6 +3,7 @@ from firebase_admin import credentials, storage, initialize_app
 import os
 import json
 import requests
+import google.generativeai as genai
 
 from appwrite.client import Client
 from appwrite.input_file import InputFile
@@ -431,3 +432,27 @@ def get_announcement():
     duration = announcement['duration']
 
     return jsonify({'mentor': mentor, 'team_size': team_size, 'duration': duration}), 200
+
+
+@routes.route('/generate-subtask', methods=['POST'])
+def generate_subtask():
+    task_id = request.json['task_id']
+    project_id = request.json['project_id']
+
+    task = models.Task.get_task(int(task_id))
+    project = models.Project.get_project(int(project_id))
+
+    if not task or not project:
+        return jsonify({'message': 'Task or project not found', 'status': 'failed'}), 404
+    
+    from . import config
+    exmple = "If the task is create the home page of the website, the subtask could be: ['create the header', 'create the footer', 'add the logo']"
+
+    formate = "['subtask1', 'subtask2', 'subtask3']"
+    propt = f"Generate the Subtask for the following task: {task} which is in the following project: {project}. Stricly give the subtask in formate like this: "+formate +"for example: "+exmple + "don't give the unnecessary information. only give the list of subtask in the formate mentioned above."
+
+    genai.configure(api_key=config.GOOGLE_GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-pro-latest')
+    response = model.generate_content(propt)
+    response_text = response.text.replace("\n","").replace("\r","").replace("\t","")
+    return jsonify({'subtasks': response_text}), 200
