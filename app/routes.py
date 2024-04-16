@@ -392,7 +392,7 @@ def update_task_tags():
     return jsonify({'message': 'Task tags updated', 'status': 'success'}), 200
 
 
-@routes.route('/get-task-by-assignee', methods=['GET'])
+@routes.route('/get-task-by-assignee', methods=['POST'])
 def get_task_by_assignee():
     assignee = request.get_json()['assignee']
     tasks = models.Task.get_task_by_assignee(assignee)
