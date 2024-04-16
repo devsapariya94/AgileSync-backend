@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from firebase_admin import credentials, storage, initialize_app
+# from firebase_admin import credentials, storage, initialize_app
 import os
 import json
 import requests
@@ -15,8 +15,8 @@ routes = Blueprint('routes', __name__)
 from . import auth
 from . import models
 
-firebase_cred = credentials.Certificate(json.loads(os.getenv('FIREBASE_CREDENTIALS')))
-firebase = initialize_app(firebase_cred, {'storageBucket': os.environ['FIREBASE_STORAGE_BUCKET_URL']})
+# firebase_cred = credentials.Certificate(json.loads(os.getenv('FIREBASE_CREDENTIALS')))
+# firebase = initialize_app(firebase_cred, {'storageBucket': os.environ['FIREBASE_STORAGE_BUCKET_URL']})
 
 
 
@@ -67,37 +67,37 @@ def uploadToAppwrite(data, use, filename, project_id=None):
 
 
 
-def uploadToFirebase(data, use, filename, project_id=None):
-    try:              
-        data = data.read()
+# def uploadToFirebase(data, use, filename, project_id=None):
+#     try:              
+#         data = data.read()
         
-        bucket = storage.bucket(app=firebase)
-        if use == 'project-documents':
+#         bucket = storage.bucket(app=firebase)
+#         if use == 'project-documents':
             
 
-            blob = bucket.blob(f'{use}/{project_id}/{filename}')
+#             blob = bucket.blob(f'{use}/{project_id}/{filename}')
 
-            blob.upload_from_string(data, content_type='application/pdf')
+#             blob.upload_from_string(data, content_type='application/pdf')
         
-        elif use == 'profile-pictures':
-            blob = bucket.blob(f'{use}/{filename}')
-            blob.upload_from_string(data, content_type='image/png')
+#         elif use == 'profile-pictures':
+#             blob = bucket.blob(f'{use}/{filename}')
+#             blob.upload_from_string(data, content_type='image/png')
 
 
-        # create token for the file
-        blob.make_public()
+#         # create token for the file
+#         blob.make_public()
         
-        # refresh the public url in chache to get the updated url 
-        blob.reload()
-        public_url = blob.public_url
-        abc = blob.generate_signed_url(1712983991)
-        return abc
+#         # refresh the public url in chache to get the updated url 
+#         blob.reload()
+#         public_url = blob.public_url
+#         abc = blob.generate_signed_url(1712983991)
+#         return abc
     
     
     
-    except Exception as e:
-        print(e)
-        return False
+#     except Exception as e:
+#         print(e)
+#         return False
     
 
 
