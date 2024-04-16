@@ -339,6 +339,7 @@ def add_task(current_user):
 
     return jsonify({'message': 'Task added', 'task_id': task_id, 'status': 'success'}), 200
 
+
 @routes.route('/get-all-tasks-by-project', methods=['GET'])
 def get_tasks():
     project_id = request.get_json()['project_id']
