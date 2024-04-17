@@ -187,6 +187,9 @@ class Task:
         self.tags = tags
         self.description = description
         self.project_id = project_id
+        self.start_date = start_date
+        self.end_date = end_date
+        
 
     def save(self):
         task_collection.insert_one({
@@ -226,6 +229,8 @@ class Task:
     def update_task_subtask(task_id, subtask):
         a = {'task_id': task_id}
         b = {'$set': {'subtask': subtask}}
+        print(subtask)
+        
         task_collection.update_one(a,b)
 
     def update_task_tags(task_id, tags):

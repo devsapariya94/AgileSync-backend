@@ -171,8 +171,8 @@ def create_project(current_user):
     team = []
     objectives = None
     documents = None
-    requirements = None
-    tasks = None
+    requirements = []
+    tasks = []
     
     data = request.get_json()
     title = data['title']
@@ -324,8 +324,8 @@ def add_task(current_user):
     description = None
     status = None
     priority = None
-    subtask = None
-    tags = None
+    subtask = []
+    tags = []
 
     if 'description' in request.json:
         description = request.json['description']
@@ -340,7 +340,7 @@ def add_task(current_user):
 
     
     task_id = models.Task(
-        title=title, description=description, start_date=start_date, end_date=end_date, assignee=assignee, status=status, priority=priority, subtask=subtask, tags=tags).save(
+                title=title, description=description, start_date=start_date, end_date=end_date, assignee=assignee, status=status, priority=priority, subtask=subtask, tags=tags, project_id=project_id).save(
     )
 
     models.Project.add_task(int(project_id), task_id)
@@ -371,7 +371,7 @@ def update_task_status():
     task_id = request.json['task_id']
     status = request.json['status']
 
-    models.Task.update_task_status(task_id, status)
+    models.Task.update_task_status(int(task_id), status)
     return jsonify({'message': 'Task status updated', 'status': 'success'}), 200
 
 @routes.route('/update-task-priority', methods=['POST'])
@@ -379,15 +379,15 @@ def update_task_priority():
     task_id = request.json['task_id']
     priority = request.json['priority']
 
-    models.Task.update_task_priority(task_id, priority)
+    models.Task.update_task_priority(int(task_id), priority)
     return jsonify({'message': 'Task priority updated', 'status': 'success'}), 200
 
 @routes.route('/update-task-subtask', methods=['POST'])
 def update_task_subtask():
     task_id = request.json['task_id']
     subtask = request.json['subtask']
-
-    models.Task.update_task_subtask(task_id, subtask)
+    print(subtask)
+    models.Task.update_task_subtask(int(task_id), subtask)
     return jsonify({'message': 'Task subtask updated', 'status': 'success'}), 200
 
 
@@ -396,7 +396,7 @@ def update_task_tags():
     task_id = request.json['task_id']
     tags = request.json['tags']
 
-    models.Task.update_task_tags(task_id, tags)
+    models.Task.update_task_tags(int(task_id), tags)
     return jsonify({'message': 'Task tags updated', 'status': 'success'}), 200
 
 
