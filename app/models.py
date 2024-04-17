@@ -230,7 +230,7 @@ class Task:
         a = {'task_id': task_id}
         b = {'$set': {'subtask': subtask}}
         print(subtask)
-        
+
         task_collection.update_one(a,b)
 
     def update_task_tags(task_id, tags):
@@ -285,13 +285,15 @@ def get_unique_announcement_id():
     return announcement_id
 
 class Announcement:
-    def __init__(self,announcement_id, title, description, owner, team_size, duration):
+    def __init__(self,announcement_id, title, description, owner, team_size, start_date, end_date):
         self.announcement_id = announcement_id
         self.title = title
         self.description = description
         self.owner = owner
         self.team_size = team_size
-        self.duration = duration
+        self.duration = ""
+        self.start_date = start_date
+        self.end_date = end_date
 
 
 
@@ -302,7 +304,9 @@ class Announcement:
             'description': self.description,
             'owner': self.owner,
             'team_size': self.team_size,
-            'duration' : self.duration
+            'duration' : self.duration,
+            'start_date': self.start_date,
+            'end_date': self.end_date
         })
             
         return self.announcement_id

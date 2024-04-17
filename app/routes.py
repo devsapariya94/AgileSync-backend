@@ -422,9 +422,12 @@ def make_an_announcement(current_user):
     description = request.json['description']
     owner = current_user
     team_size = request.json['team_size']
-    duration = request.json['duration']
+    # duration = request.json['duration']
+    start_date = request.json['start_date']
+    end_date = request.json['end_date']
     announcement_id = models.get_unique_announcement_id()
-    models.Announcement(announcement_id,title, description, owner, team_size, duration).save()
+    
+    models.Announcement(announcement_id= announcement_id, title=title, description=description, owner=owner, team_size=team_size, start_date=start_date, end_date=end_date).save() 
     return jsonify({'message': 'Announcement made', 'status': 'success', "url": f"https://agilesync.co/create-project/{announcement_id}"}), 200
 
 
