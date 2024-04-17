@@ -176,10 +176,10 @@ def get_unique_task_id():
 
     
 class Task:
-    def __init__ (self, title, duration,assignee, project_id,  status = None, priority = None, subtask = None, tags = None, description = None):
+    def __init__ (self, title,assignee, project_id, start_date, end_date, status = None, priority = None, subtask = None, tags = None, description = None):
         self.task_id = get_unique_task_id()
         self.title = title
-        self.duration = duration
+        self.duration = ""
         self.assignee = assignee
         self.status = status
         self.priority = priority
@@ -199,7 +199,9 @@ class Task:
             'subtask': self.subtask,
             'tags': self.tags,
             'description': self.description,
-            'project_id': self.project_id
+            'project_id': self.project_id,
+            'start_date': self.start_date,
+            'end_date': self.end_date
         })
 
         return self.task_id

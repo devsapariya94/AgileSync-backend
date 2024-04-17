@@ -316,7 +316,9 @@ def get_project_by_participant(current_user):
 def add_task(current_user):
     project_id = request.json['project_id']
     title = request.json['title']
-    duration = request.json['duration']
+    # duration = request.json['duration']
+    start_date = request.json['start_date']
+    end_date = request.json['end_date']
     assignee = request.json['assignee']
 
     description = None
@@ -336,7 +338,10 @@ def add_task(current_user):
     if 'tags' in request.json:
         tags = request.json['tags']
 
-    task_id = models.Task(title, duration, assignee, int(project_id), description, status, priority, subtask, tags).save()
+    
+    task_id = models.Task(
+        title=title, description=description, start_date=start_date, end_date=end_date, assignee=assignee, status=status, priority=priority, subtask=subtask, tags=tags).save(
+    )
 
     models.Project.add_task(int(project_id), task_id)
 
