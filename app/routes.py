@@ -177,10 +177,12 @@ def create_project(current_user):
     data = request.get_json()
     title = data['title']
     description = data['description']
+    start_date = data['start_date']
+    end_date = data['end_date']
     purpose = data['purpose']
     owner = current_user
     mentor = data['mentor']
-    duration = data['duration']
+    # duration = data['duration']
     if 'team' in data:
         team = data['team']
     elif 'objectives' in data:
@@ -192,8 +194,9 @@ def create_project(current_user):
     elif 'tasks' in data:
         tasks = data['tasks']
     
-    project_id = models.Project(title, description, purpose, owner, mentor, duration, team, objectives, documents, requirements, tasks).save()
-
+    project_id = models.Project(
+        title=title, description=description, start_date=start_date, end_date=end_date, purpose=purpose, owner=owner, mentor=mentor, team=team, objectives=objectives, documents=documents, requirements=requirements, tasks=tasks).save(
+    )
     return jsonify({'message': 'Project created', 
                     'project_id': project_id, 'status': 'success'}), 200
 

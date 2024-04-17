@@ -71,7 +71,7 @@ def get_unique_project_id():
 
 
 class Project:
-    def __init__(self, title, description, purpose, owner, mentor, duration, team = [], objectives = None, documents = None, requirements= [], tasks = []):
+    def __init__(self, title, description, purpose, owner, mentor, start_date, end_date,duration = "", team = [], objectives = None, documents = None, requirements= [], tasks = []):
         self.project_id = get_unique_project_id()
         self.title = title
         self.description = description
@@ -84,6 +84,8 @@ class Project:
         self.documents = documents
         self.requirements = requirements
         self.tasks = tasks
+        self.start_date = start_date
+        self.end_date = end_date
 
     def save(self):
         project_collection.insert_one({
@@ -98,7 +100,10 @@ class Project:
             'objectives': self.objectives,
             'documents': self.documents,
             'requirements': self.requirements,
-            'tasks': self.tasks
+            'tasks': self.tasks,
+            "start_date": self.start_date,
+            "end_date": self.end_date
+                    
         })
     
         return self.project_id
