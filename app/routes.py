@@ -467,3 +467,16 @@ def generate_subtask():
     response = model.generate_content(propt)
     response_text = response.text.replace("\n","").replace("\r","").replace("\t","")
     return jsonify({'subtasks': response_text}), 200
+
+@routes.route('/get-all-announcements', methods=['GET'])
+@auth.token_required
+def get_all_announcements(current_user):
+    announcements = models.Announcement.get_announcement_by_owner(current_user)
+
+    announcements = list(announcements)
+    for announcement in announcements:
+        announcement["_id"] = str(announcement["_id"])
+
+
+    return jsonify(announcements), 200
+
