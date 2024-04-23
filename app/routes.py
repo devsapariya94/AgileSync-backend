@@ -480,3 +480,22 @@ def get_all_announcements(current_user):
 
     return jsonify(announcements), 200
 
+
+
+@routes.route('/get-all-faculty')
+def get_all_faculty():
+    faculty = models.Faculty.get_all_faculty()
+    faculty = list(faculty)
+    for f in faculty:
+        f["_id"] = str(f["_id"])
+
+    return jsonify(faculty), 200
+
+@routes.route('/get-all-users')
+def get_all_users():
+    users = models.User.get_all_users()
+    users = list(users)
+    for user in users:
+        user["_id"] = str(user["_id"])
+
+    return jsonify(users), 200

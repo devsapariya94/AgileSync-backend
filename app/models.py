@@ -50,6 +50,10 @@ class User:
         user = users_collection.find_one({'email': email})
         return user['skills']
     
+    def get_all_users():
+        users = users_collection.find()
+        return users
+    
         
 class BlacklistToken:
    
@@ -277,12 +281,18 @@ class Faculty:
         faculty = faculty_collection.find({'department': department})
         return faculty
     
+    def get_all_faculty():
+        faculty = faculty_collection.find()
+        return faculty
+    
 
 def get_unique_announcement_id():
     announcement_id = random.randint(10000, 9999999 )
     while announcement_collection.find_one({'announcement_id': announcement_id}):
         announcement_id = random.randint(100000, 999999)
     return announcement_id
+
+
 
 class Announcement:
     def __init__(self,announcement_id, title, description, owner, team_size, start_date, end_date):
