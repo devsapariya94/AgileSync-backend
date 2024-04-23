@@ -283,6 +283,25 @@ def add_project_document():
     models.Project.update_project_documents(int(project_id), public_url)
     return jsonify({'message': 'Document added','url':public_url, 'status': 'success'}), 200
 
+
+@routes.route('/helper-1-for-upload-document', methods=['POST'])
+def helper_1_for_upload_document():
+    project_id = request.json['project_id']
+    project = models.Project.get_project(int(project_id))
+    if not project:
+        return jsonify({'message': 'Project not found', 'status': 'failed'}), 404
+    
+    else:
+        return jsonify({'message': 'Project found', 'status': 'success'}), 200
+
+
+@routes.route('/helper-2-for-upload-document', methods=['POST'])
+def helper_2_for_upload_document():
+    project_id = request.json['project_id']
+    public_url = request.files['public_url']
+    models.Project.update_project_documents(int(project_id), public_url)
+    return jsonify({'message': 'Document added','url':public_url, 'status': 'success'}), 200
+
 @routes.route('/add-team-member', methods=['POST'])
 @auth.token_required
 def add_team_member(current_user):
