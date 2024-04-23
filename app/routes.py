@@ -263,8 +263,8 @@ def get_project_by_mentor():
 
 
 @routes.route('/add-project-document', methods=['POST'])
-@auth.token_required
-def add_project_document(current_user):
+# @auth.token_required
+def add_project_document():
     project_id = request.form['project_id']
     document = request.files['document']
     filename = document.filename
@@ -273,8 +273,8 @@ def add_project_document(current_user):
     if not project:
         return jsonify({'message': 'Project not found', 'status': 'failed'}), 404
     
-    if project['owner'] != current_user and current_user not in project['team']:
-        return jsonify({'message': 'You are not allowed to add document to this project', 'status': 'failed'}), 403
+    # if project['owner'] != current_user and current_user not in project['team']:
+    #     return jsonify({'message': 'You are not allowed to add document to this project', 'status': 'failed'}), 403
     
     filename = f"{project_id}_pdf"
 
