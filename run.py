@@ -8,7 +8,7 @@ dotenv.load_dotenv()
 app = Flask(__name__)
 
 # Enabling CORS
-flask_cors.CORS(app)
+flask_cors.CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 # Importing the blueprint
