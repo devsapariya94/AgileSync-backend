@@ -147,7 +147,7 @@ def add_skills(current_user):
     models.User.update_skills(current_user, skills)
     return jsonify({'message': 'skills added', 'status': 'success'}), 200
 
-@routes.route('/get-skills', methods=['GET'])
+@routes.route('/get-skills', methods=['POST'])
 def get_skills():
     email = request.get_json()['email']
     skills = models.User.get_skills(email)
