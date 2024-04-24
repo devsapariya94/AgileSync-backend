@@ -200,7 +200,7 @@ def create_project(current_user):
     return jsonify({'message': 'Project created', 
                     'project_id': project_id, 'status': 'success'}), 200
 
-@routes.route('/get-project', methods=['GET'])
+@routes.route('/get-project', methods=['POST'])
 @auth.token_required
 def get_project(current_user):
     project_id = request.get_json()['project_id']
