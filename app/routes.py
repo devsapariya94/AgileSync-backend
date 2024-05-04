@@ -214,7 +214,7 @@ def get_project(current_user):
     project["_id"] = str(project["_id"])
     return jsonify(project), 200
 
-@routes.route('/get-project-documents', methods=['GET'])
+@routes.route('/get-project-documents', methods=['POST'])
 def get_project_documents():
     project_id = request.get_json()['project_id']
     documents = models.Project.get_project_documents(int(project_id))
